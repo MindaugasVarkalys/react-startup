@@ -1,9 +1,9 @@
-/* eslint no-var: 0 */
-var webpack = require('webpack');
-var path = require('path');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
+    mode: 'production',
     entry: './src/index.jsx',
     output: {
         path: path.resolve(__dirname, 'public'),
@@ -15,9 +15,12 @@ module.exports = {
             {
                 test: /\.(jsx|js)$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader'
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env', '@babel/preset-react']
+                }
             }, {
-                test: /\.scss$/,
+                test: /\.(scss|css)$/,
                 use: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [{
@@ -48,20 +51,22 @@ module.exports = {
         ]
     },
 
+    optimization: {
+        minimizer: [new UglifyJsPlugin({
+            cache: true,
+            parallel: true,
+            uglifyOptions: {
+                output: {
+                    comments: false
+                }
+            }
+        })]
+    },
+
     plugins: [
         new ExtractTextPlugin({
             filename: 'style.css',
             allChunks: true
-        }),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: false,
-            comments: false,
-            minimize: true
-        }),
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
         })
     ],
 

@@ -1,8 +1,8 @@
-/* eslint-disable no-var */
-var path = require('path');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
+    mode: 'development',
     entry: './src/index.jsx',
     output: {
         path: path.resolve(__dirname, 'public'),
@@ -14,9 +14,12 @@ module.exports = {
             {
                 test: /\.(jsx|js)$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader'
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env', '@babel/preset-react']
+                }
             }, {
-                test: /\.scss$/,
+                test: /\.(scss|css)$/,
                 use: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [{
@@ -62,6 +65,7 @@ module.exports = {
 
     devServer: {
         inline: true,
-        contentBase: 'public/'
+        contentBase: 'public/',
+        historyApiFallback: true
     }
 };
